@@ -5,8 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
-using namespace std;
+#include <utility>
 
 
 struct User {
@@ -16,6 +15,6 @@ struct User {
 };
 
 
-pair<double, double> getUserLocation();
+pair<double, double> getUserLocation(const string& address, const string& apikey);
 
 #endif
