@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <utility>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 #include <curl/curl.h>
@@ -7,9 +9,23 @@
 
 
 using namespace std;
+using std:: vector;
+using std:: pair;
 using json = nlohmann::json;
 
-pair<double,double> getUserLocation(const string& address, const string& apiKey) {
+
+User :: User() {
+    latitude = 0;
+    longitude = 0;
+    
+}
+
+void User :: setCoords(pair<double, double> coords) {
+    this->longitude = coords.first;
+    this->latitude = coords.second;
+}
+
+pair<double,double> User ::  getUserLocation(const string& address, const string& apiKey) {
     
 
 
@@ -33,12 +49,16 @@ pair<double,double> getUserLocation(const string& address, const string& apiKey)
 
 curl_easy_setopt(curl, CURLOPT_URL, apiURL.c_str());
 curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
+string responseData;
+
 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, [](char *ptr, size_t size, size_t nmemb, string *data){
     data->append(ptr, size * nmemb);
     return size * nmemb;
 });
 
-string responseData;
+curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseData);
+
 
 
 CURLcode res = curl_easy_perform(curl);
@@ -56,10 +76,10 @@ CURLcode res = curl_easy_perform(curl);
     try {
         json jsonRes = json::parse(responseData);
 
-        if(!jsonRes["reults"].empty()) {
-            double latitude = jsonRes["results"][0]["geomtry"]["location"]["lat"];
-            double longitude = jsonRes["results"][0]["geomtry"]["location"]["lng"];
-            make_pair(latitude, longitude);
+        if(!jsonRes["results"].empty()) {
+            double latitude = jsonRes["results"][0]["geometry"]["location"]["lat"];
+            double longitude = jsonRes["results"][0]["geometry"]["location"]["lng"];
+           return make_pair(latitude, longitude);
         } else {
             cerr << "No results found for the address: " << address << endl;
         }

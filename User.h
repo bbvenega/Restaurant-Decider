@@ -7,14 +7,22 @@
 #include <vector>
 #include <utility>
 
+using namespace std;
 
-struct User {
+class User {
     double latitude;
     double longitude;
     vector<int> rankings;
+
+    public:
+
+    User();
+
+     void setCoords(pair<double,double> coordinates);
+    pair<double, double> getUserLocation(const string& address, const string& apikey);
 };
 
 
-pair<double, double> getUserLocation(const string& address, const string& apikey);
+
 
 #endif
